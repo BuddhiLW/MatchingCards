@@ -1,0 +1,61 @@
+
+#card0.*,#card0.*,#card0.*,#card0.*,#card0.*,#card0.*,#card0.*{
+    transform: rotateY(180deg);
+    transform: rotateY(0deg);
+}
+
+#card0.active {
+    background-image: url("../img/cards/Arjuna.jpg");
+}
+
+#card1.active {
+    background-image: url("../img/cards/Kali.jpg");
+}
+
+#card2.active {
+    background-image: url("../img/cards/Krishna.jpg");
+}
+
+#card3.active {
+    background-image: url("../img/cards/Manjusri.jpg");
+}
+
+#card4.active {
+    background-image: url("../img/cards/Gita.jpg");
+}
+
+#card5.active {
+    background-image: url("../img/cards/siddartha.jpg");
+}
+
+#card6.active {
+    background-image: url("../img/cards/Bodhidharma2.jpg");
+}
+
+#card0.permanent {
+    background-image: url("../img/cards/Arjuna.jpg");
+}
+
+#card1.permanent {
+    background-image: url("../img/cards/Kali.jpg");
+}
+
+#card2.permanent {
+    background-image: url("../img/cards/Krishna.jpg");
+}
+
+#card3.permanent {
+    background-image: url("../img/cards/Manjusri.jpg");
+}
+
+#card4.permanent {
+    background-image: url("../img/cards/Gita.jpg");
+}
+
+#card5.permanent {
+    background-image: url("../img/cards/siddartha.jpg");
+}
+
+#card6.permanent {
+    background-image: url("../img/cards/Bodhidharma2.jpg");
+}

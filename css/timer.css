@@ -1,0 +1,13 @@
+div{
+    background: #FFEFD5;
+    box-shadow: rgba(0, 0, 0, 0.3) 0px 19px 38px, rgba(0, 0, 0, 0.22) 0px 15px 12px; 
+    box-sizing: content-box;
+    position:absolute;
+    right:0;
+    top:0;
+    width: 250px;
+    height: 20px;
+    padding: 2px;
+    font-family: "Lucida Console", "Courier New", monospace;
+    text-align: center;
+}

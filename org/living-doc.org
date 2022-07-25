@@ -1,0 +1,402 @@
+#+AUTHOR: BuddhiLW
+#+STARTUP: latexpreview
+#+PROPERTY: header-args:js :tangle ../js/prompt-logic.js :mkdirp yes
+
+* Notation convention
+=e= denotes element <-> DOM elements, lists, nodes, etc.
+=c= or =p= denotes class or property; both will be used interchangebly.
+
+* JS Prompt-related
+** Import cards.js
+#+begin_src js :tangle ../js/prompt-logic.js
+  // import assignIdAll from "./cards.js"
+#+end_src
+
+** Game initializer
+#+begin_src js :tangle ../js/prompt-logic.js
+  var initGame = () => filterCards(howMany());
+#+end_src
+
+** How many cards?
+
+Prompt the player asking for inputs
+
+#+begin_src js :tangle ../js/prompt-logic.js
+  var howMany = () => prompt("With how many cards you wish to play with?");
+#+end_src
+
+** Filter condition
+
+If the card is even and more than four and less than 14
+
+#+begin_src js :tangle ../js/prompt-logic.js
+  var filterCards = number =>
+      (number % 2 === 0 && (number > 4 && number < 14))
+      ? createCards(number)
+      : initGame();
+#+end_src
+
+** Create Cards
+*** Helper funtions
+
++ =querier= is a sugar syntax for "document.querySelector".
++ =populateWith= takes an element and a child you want to adhere to it (in our case =li=) - although the names chosen are conventions, here.
+
+#+begin_src js :tangle ../js/prompt-logic.js
+  var querier = (e) => document.querySelector(e);
+  var populateWith = (e) => (li) => e.appendChild(li.cloneNode(true));
+#+end_src
+
+*** Helper terms
+
++ We will use the queried =ul=. And, we will create li DOM elements.
+
+#+begin_src js :tangle ../js/prompt-logic.js
+  var ul = querier('ul');
+  let li = document.createElement('li');
+#+end_src
+
+*** Iteration
+
+Here, we want to populate the Unordered List (=ul=) of our HTML with cards. So, we use the populate function which loops over the inputed =number= of cards, using =populateWith= to populate our list.
+
+#+begin_src js :tangle ../js/prompt-logic.js
+  // var querierAll = s => document.querySelectorAll(s);
+  var populate = (number) => {
+      console.log(number);
+      for (var i = 0; i < number; i++) {
+          populateWith(ul)(li);
+      }
+      // let cards = querierAll("li");
+      //     assignIdAll(number);
+      //
+  };
+#+end_src
+
+*** Call
+
+Here we, again, sugar syntax =populate= to =createCards=, which is almost a type annotation. 
+
+#+begin_src js :tangle ../js/prompt-logic.js
+  var createCards = (number) => populate(number);
+#+end_src
+
+** Initialize the game
+
+Then, finally, we declare the game initializer.
+
+#+begin_src js :tangle ../js/prompt-logic.js
+  initGame();
+#+end_src
+
+* JS Turning Cards
+** Expose cards.js
+#+begin_src js :tangle ../js/.js
+  // export assignIdAll
+#+end_src
+** Click events
+*** Query select all cards
+
+**** Query all cards
+  - They are uniquely defined by being li's.
+    
+#+begin_src js :tangle ../js/cards.js
+  var querierAll = s => document.querySelectorAll(s);
+  const cards = querierAll("li");
+#+end_src
+
+**** Put an event listener, for clicks, in each.
+  
+#+begin_src js :tangle ../js/cards.js :mkdirp yes
+  cards.forEach((card) => {
+      card.addEventListener("click", select);
+  });
+#+end_src
+
+*** Change css of each card on selection
+**** Helper functions
+  Help function to create and array of all children
+
+#+begin_src js :tangle ../js/cards.js
+    var arrayChildren = () => Array.from(this.parentElement.children); 
+  #+end_src
+
+ Helper functions to remove/add class (since we will not be changing anything else)
+
+#+begin_src js :tangle ../js/cards.js
+  var remover = e => c => e.classList.remove(c);
+  // cons is a well known alias for construct, from other languages
+  var cons = e => c => e.classList.add(c);
+#+end_src
+
+**** Selection
+
+  #+begin_src js :tangle ../js/cards.js
+    var counter = 0;
+    function select(e) {
+        // const children = Array.from(this.parentElement.children);
+        // let active = query
+        cards.forEach((card) => {
+            remover(card)("card-border");
+            remover(card)("active");
+            if (card) {
+                cons(card)("hidden");
+            }
+        });
+        cons(this)("card-border");
+        cons(this)("active");
+        remover(this)("hidden");
+    //     orderConfirmation();
+    }
+  #+end_src
+
+** Assign a random card image for each card
+*** List Cards
+Card's url which will be used to assign a background for the cards 
+#+begin_src css :tangle ../css/cards.css
+  #card0.active{
+      background-image: url("../img/cards/Akshobhya.jpg");
+  }
+  #card1.active{
+      background-image: url("../img/cards/Amitabha.jpg");
+  }
+  #card2.active{
+      background-image: url("../img/cards/Amoghasiddhi.jpg");
+  }
+  #card3.active{
+      background-image: url("../img/cards/Manjusri.jpg");
+  }
+  #card4.active{
+      background-image: url("../img/cards/Gita.jpg");
+  }
+  #card5.active{
+      background-image: url("../img/cards/vairocana.jpg");
+  }
+#+end_src
+
+*** Suffle function
+#+begin_src js :tangle ../js/cards.js
+  // Snippet from https://www.w3docs.com/snippets/javascript/how-to-randomize-shuffle-a-javascript-array.html
+  function shuffleArray(array) {
+      let curId = array.length;
+      // There remain elements to shuffle
+      while (0 !== curId) {
+          // Pick a remaining element
+          let randId = Math.floor(Math.random() * curId);
+          curId -= 1;
+          // Swap it with the current element.
+          let tmp = array[curId];
+          array[curId] = array[randId];
+          array[randId] = tmp;
+      }
+      return array;
+  }
+#+end_src
+
+*** Assign Cards
+**** Assign Id function
+#+begin_src js :tangle ../js/cards.js
+  var assignId = e => identity => e.id = `card${identity}`; 
+#+end_src
+
+**** Assign  id for each li
+
+- The ideia is that two cards must always have the same id (same image). There are half the ids of the quantity of cards.
+
+- This function, =assignIdAll= will give us cards with shuffled ids.
+
+#+begin_src js :tangle ../js/cards.js
+  var assignIdAll = (number) => {
+      console.log(number);
+      let indexArray = Array.from(Array(number/2).keys());
+      let indexShuffled = shuffleArray(indexArray);
+      for (var i = 0; i < number/2; i++) {
+          assignId(cards[i])(indexShuffled[i]);
+      }
+      indexShuffled = shuffleArray(indexShuffled);
+      for (var j = number/2; j < number; j++) {
+          assignId(cards[j])(indexShuffled[j - number/2]);
+      }
+  };
+#+end_src
+
+# **** Calling the function
+#+begin_src js :tangle ../js/cards.js
+  // initGame();
+#+end_src
+
+* HTML
+
+** Head
+#+begin_src html :tangle ../html/index.html :mkdirp yes
+  <!DOCTYPE html>
+  <html lang="en">
+
+  <head>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="preconnect" href="https://fonts.gstatic.com">
+      <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap" rel="stylesheet">
+      <link rel="stylesheet" href="../css/reset.css">
+      <link rel="stylesheet" href="../css/layout.css">
+      <link rel="stylesheet" href="../css/cards.css">
+      <!-- <link rel="stylesheet" href="../css/dynamic.css"> -->
+      <title>Parrots</title>
+  </head>
+#+end_src
+
+** Body
+#+begin_src html :tangle ../html/index.html :mkdirp yes
+  <body>
+      <h1 class="center">TAROT CARD GAME</h1>
+      <ul>
+      </ul>
+      <!-- scripts -->
+      <script src="../js/cards.js"></script>
+      <script src="../js/prompt-logic.js"></script>
+  </body>
+  </html>
+#+end_src
+
+* CSS
+** Reset
+#+begin_src css :tangle ../css/reset.css :mkdirp yes
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+#+end_src
+
+** Layout
+*** ul
+
+There will be a division of rows compatible with how many cards the player chooses to play with.
+Each row will have cards. Therefore, the layout must follow:
+
+#+begin_src css :tangle ../css/layout.css :mkdirp yes
+  ul {
+      display: flex;
+      flex-wrap:wrap;
+      align-items:center;
+      margin:auto;
+      position: absolute;
+      left: 10%;
+      top: calc(56px + 17px + 10px + 17px + 30px);
+  }
+#+end_src
+
+*** li
+
+Each listed item (li) will have an image containing the parrot
+
+#+begin_src css :tangle ../css/layout.css :mkdirp yes
+  li {
+      min-width: 117px;
+      width: 117px;
+      height: 146px;
+      background-image: url("../img/laughting-buddha-fit-nobg.png");
+      background-color: #fdde2d70;
+      border: 1px solid #AA0000;
+      border-radius: 10px;
+      margin: 17px;
+  }
+#+end_src
+
+*** Background (body)
+Let's change the background to a redish tone
+
+#+begin_src css :tangle ../css/layout.css :mkdirp yes
+  body {
+      background-color: #AA000d30;
+  }
+#+end_src
+
+*** h1
+Now, we will change the heading to the desired font and size
+
+#+begin_src css :tangle ../css/layout.css :mkdirp yes
+  @font-face{
+      font-family: 'Kramer';
+      src: url('../font/KramerRegular.ttf');
+  }
+
+  h1 {
+      font-family: Roboto;
+      font-size: 56px;
+      font-weight: 700;
+      color: #F6C700;
+      text-shadow: #AA000d60 0px 0px 5px;
+  }
+
+  h1::first-letter{
+      font-size:125%;
+      font-family: Kramer;
+      color: #AA000d60;
+      text-shadow: #F6C700 1px 1px 15px;
+  }
+
+  .center {
+      box-sizing: border-box;
+      text-align: center;
+      margin: 40px auto 47px auto;
+  }
+#+end_src
+
+** Mobile adjustment
+
+#+begin_src css :tangle ../css/layout.css :mkdirp yes
+  @media screen and (max-width: 500px){
+      ul {
+          position: initial;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+      }
+  }
+#+end_src
+
